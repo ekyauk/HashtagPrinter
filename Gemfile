@@ -27,9 +27,15 @@ gem 'instagram'
 
 gem 'omniauth-google-oauth2'
 
+gem 'omniauth-instagram'
+
+gem 'omniauth'
+
 gem 'rails_12factor', group: :production
 
 gem 'figaro', '~> 1.1.1'
+
+gem 'devise'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
