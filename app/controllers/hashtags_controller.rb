@@ -1,5 +1,5 @@
 class HashtagsController < ApplicationController
-    SUBSCRIPTION_CALLBACK = 'http://localhost:3000/hashtags/callback'
+    SUBSCRIPTION_CALLBACK = 'http://hashtag-printer.herokuapp.com/hashtags/callback'
     def create
         hashtag = Hashtag.new(hashtag_params(params[:hashtag]))
         hashtag.user_id = current_user.id
@@ -10,7 +10,6 @@ class HashtagsController < ApplicationController
     end
 
     def callback
-
         puts 'SUBSCRIPTION_CALLBACK'
         puts params
         render inline: params['hub.challenge']
