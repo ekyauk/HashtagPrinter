@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   resources :printers
 
   get 'users/add_printer/:id', to: 'users#add_printer'
+  post 'hashtags/create', to: 'hashtags#create'
+  get 'hashtags/callback', to: 'hashtags#callback'
+  post 'hashtags/callback', to: 'hashtags#print_photo'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

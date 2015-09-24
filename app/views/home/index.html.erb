@@ -3,4 +3,8 @@
 <% else %>
     Welcome <%= current_user.name %>!
     <%= link_to "View Printers", controller: :printers, action: :index %>
+    <%= form_for :hashtag, method: :post, url: {controller: :hashtags, action: :create} do |f| %>
+        <%= f.text_field :name, placeholder: 'Add a hashtag' %>
+        <%= f.submit %>
+    <% end %>
 <% end %>
