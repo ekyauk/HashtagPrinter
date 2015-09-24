@@ -12,7 +12,7 @@ class HashtagsController < ApplicationController
     def callback
         puts 'SUBSCRIPTION_CALLBACK'
         puts params
-        render inline: params['hub.challenge']
+        render text: params['hub.challenge']
     end
 
     def print_photo
