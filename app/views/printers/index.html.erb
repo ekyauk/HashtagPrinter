@@ -6,6 +6,11 @@
     <tr>
         <td><%= printer['displayName'].gsub('_', ' ') %></td>
         <td><%= printer['connectionStatus'] %></td>
+        <% if printer['id'] == current_user.printer_id %>
+            <td>Selected</td>
+        <% else %>
+            <td><%= link_to 'Select', controller: :users, action: :add_printer, id: printer['id'] %></td>
+        <% end %>
     </tr>
     <% end %>
 </table>
