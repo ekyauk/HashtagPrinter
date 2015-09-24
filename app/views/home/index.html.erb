@@ -2,4 +2,5 @@
     <%= link_to "Sign in with Google", user_omniauth_authorize_path(:google_oauth2) %>
 <% else %>
     Welcome <%= current_user.name %>!
+    <%= link_to "View Printers", controller: :printers, action: :index %>
 <% end %>

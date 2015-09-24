@@ -1,0 +1,12 @@
+<% if @printer_info == nil %>
+    <h1>Error no printers :(</h1>
+<% else %>
+<table>
+    <% for printer in @printer_info['printers'] %>
+    <tr>
+        <td><%= printer['displayName'].gsub('_', ' ') %></td>
+        <td><%= printer['connectionStatus'] %></td>
+    </tr>
+    <% end %>
+</table>
+<% end %>
