@@ -38,6 +38,11 @@ gem 'figaro', '~> 1.1.1'
 gem 'devise'
 
 gem 'json'
+
+gem 'unicorn'
+
+gem 'rack-timeout'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
