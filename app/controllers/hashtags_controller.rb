@@ -1,14 +1,15 @@
 class HashtagsController < ApplicationController
     SUBSCRIPTION_CALLBACK = 'http://hashtag-printer.herokuapp.com/hashtags/callback'
     def create
-        hashtag = Hashtag.new(hashtag_params(params[:hashtag]))
-        hashtag.user_id = current_user.id
+        hashtag = Hashtag.where(name: params[:hashtag][:name]).first ?? Hashtag.new(hashtag_params(params[:hashtag]))
+        hashtag.users << current_user.id
         if hashtag.save
             options = { object_id: params[:hashtag][:name] }
             puts Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK,'media', options)
             puts 'output above'
+            flash[:message] = "Successfully subscribed to '#{params[:hashtag][:name]}'"
         end
-        redirect_to controller: :home, action: :index
+        render controller: :home, action: :index
     end
 
     def callback
