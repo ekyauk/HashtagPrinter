@@ -1,5 +1,6 @@
 Welcome <%= current_user.name %>!
 <%= link_to "View Printers", controller: :printers, action: :index %>
+<br/>
 <% if !flash[:message].nil? %>
     <%= flash[:message] %>
 <% end %>

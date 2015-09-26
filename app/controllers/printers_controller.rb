@@ -1,5 +1,6 @@
 require 'net/http'
 require 'json'
+
 class PrintersController < ApplicationController
 
     def index
