@@ -5,8 +5,10 @@ class HashtagsController < ApplicationController
         hashtag.user_id = current_user.id
         if hashtag.save
             options = { object_id: params[:hashtag][:name] }
-            Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK,'media', options)
+            puts Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK,'media', options)
+            puts 'output above'
         end
+        redirect_to controller: :home, action: :index
     end
 
     def callback

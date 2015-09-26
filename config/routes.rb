@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_for :users, :controllers => {
+    :omniauth_callbacks => 'users/omniauth_callbacks'
+   }
   resources :users
   resources :printers
 
   get 'users/add_printer/:id', to: 'users#add_printer'
+  get 'users/index', to: 'users#index'
   post 'hashtags/create', to: 'hashtags#create'
   get 'hashtags/callback', to: 'hashtags#callback'
   post 'hashtags/callback', to: 'hashtags#print_photo'
@@ -11,7 +14,7 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'home#index'
+  root 'users#index'
   # get '/auth/:provider/callback', to: 'users#index'
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
