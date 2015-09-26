@@ -1,5 +1,9 @@
 class HashtagsController < ApplicationController
+
+    skip_before_filter :check_login, only: [:callback, :print_photo]
+
     SUBSCRIPTION_CALLBACK = 'http://hashtag-printer.herokuapp.com/hashtags/callback'
+
     def create
         hashtag = Hashtag.find_by_name(params[:hashtag][:name]) ? Hashtag.find_by_name(params[:hashtag][:name])  : Hashtag.new(hashtag_params(params[:hashtag]))
         if hashtag.users.include?(current_user)
