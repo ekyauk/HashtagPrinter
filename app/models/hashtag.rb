@@ -8,7 +8,7 @@ class Hashtag < ActiveRecord::Base
     def create_subscription(user_id)
         options = { object_id: self.name }
         begin
-            Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK + user_id,'media', options)
+            Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK + user_id.to_s,'media', options)
         rescue Exception => e
             self.destroy
             puts "Instagram fail: #{e}"
