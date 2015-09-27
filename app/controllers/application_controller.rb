@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 
   def user_is_valid
     return current_user != nil &&
-        session[:session_length] > (current_user.current_sign_in_at - DateTime.now)
+        session[:session_length] > (Time.now.utc - current_user.current_sign_in_at.time)
   end
 
   def check_login
