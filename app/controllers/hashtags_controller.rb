@@ -3,7 +3,6 @@ class HashtagsController < ApplicationController
     skip_before_filter :check_login, only: [:callback, :print_photo]
     protect_from_forgery except: :print_photo
 
-    SUBSCRIPTION_CALLBACK = 'http://hashtag-printer.herokuapp.com/hashtags/callback'
 
     def create
         hashtag = Hashtag.find_by_name(params[:hashtag][:name]) ? Hashtag.find_by_name(params[:hashtag][:name])  : Hashtag.new(hashtag_params(params[:hashtag]))
@@ -11,18 +10,7 @@ class HashtagsController < ApplicationController
             flash[:message] = "Already subscribed to '#{params[:hashtag][:name]}'"
         else
             hashtag.users << current_user
-            if hashtag.save
-                options = { object_id: params[:hashtag][:name] }
-                begin
-                    Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK,'media', options)
-                    puts 'output above'
-                    flash[:message] = "Successfully subscribed to '#{params[:hashtag][:name]}'"
-                rescue Exception => e
-                    hashtag.destroy
-                    puts "Instagram fail: #{e}"
-                    @error = "Something went wrong. Cannot subscribe to #{params[:hashtag][:name]}"
-                end
-            end
+            hashtag.save
         end
         redirect_to :back
     end
