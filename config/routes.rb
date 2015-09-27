@@ -9,8 +9,8 @@ Rails.application.routes.draw do
   get 'users/add_printer/:id', to: 'users#add_printer'
   get 'users/index', to: 'users#index'
   post 'hashtags/create', to: 'hashtags#create'
-  get 'hashtags/callback', to: 'hashtags#callback'
-  post 'hashtags/callback', to: 'hashtags#print_photo'
+  get 'hashtags/callback/:id', to: 'hashtags#callback'
+  post 'hashtags/callback/:id', to: 'hashtags#print_photo'
   get 'hashtags/delete/:id', to: 'hashtags#delete'
   get 'hashtags/delete', to: 'hashtags#delete'
 

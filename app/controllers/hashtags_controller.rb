@@ -10,7 +10,9 @@ class HashtagsController < ApplicationController
             flash[:message] = "Already subscribed to '#{params[:hashtag][:name]}'"
         else
             hashtag.users << current_user
-            hashtag.save
+            if hashtag.save
+                hashtag.create_subscription(current_user.id)
+            end
         end
         redirect_to :back
     end
@@ -21,14 +23,13 @@ class HashtagsController < ApplicationController
 
     def print_photo
         puts 'SUBSCRIPTION_CALLBACK'
-        user = current_user
         Instagram.process_subscription(request.body.read) do |handler|
             handler.on_tag_changed do |tag|
                 photos = Instagram.tag_recent_media(tag)
                 for photo_hash in photos
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
-                    puts sendToGCP(photo_url, user.printer_id).body
+                    puts sendToGCP(photo_url, params[:id]).body
                 end
             end
         end
