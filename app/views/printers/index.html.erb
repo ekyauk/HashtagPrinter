@@ -4,7 +4,7 @@
 <table>
     <% for printer in @printer_info['printers'] %>
     <tr>
-        <td><%= printer['displayName'].gsub('_', ' ') %></td>
+        <td><%= link_to printer['displayName'].gsub('_', ' '), action: :info, id: printer['id'] %></td>
         <td><%= printer['connectionStatus'] %></td>
         <% if printer['id'] == current_user.printer_id %>
             <td>Selected</td>

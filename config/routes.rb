@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :users
 
   get 'printers/', to: 'printers#index'
+  get 'printers/info/:id', to: 'printers#info'
   get 'users/add_printer/:id', to: 'users#add_printer'
   get 'users/index', to: 'users#index'
   post 'hashtags/create', to: 'hashtags#create'
