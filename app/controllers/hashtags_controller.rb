@@ -28,19 +28,19 @@ class HashtagsController < ApplicationController
     end
 
     def callback
-        puts 'SUBSCRIPTION_CALLBACK'
-        puts params
         render text: params['hub.challenge']
     end
 
     def print_photo
+        puts 'SUBSCRIPTION_CALLBACK'
+        user = current_user
         Instagram.process_subscription(request.body.read) do |handler|
             handler.on_tag_changed do |tag|
                 photos = Instagram.tag_recent_media(tag)
-                puts 'RETURN VALUE'
-                puts photos
-                for photo in photos
-                    puts 'should print photo'
+                for photo_hash in photos
+                    photo_url = photo_hash['images']['standard_resolution']['url']
+                    puts "about to print #{photo_url}"
+                    puts sendToGCP(photo_url, user.printer_id).body
                 end
             end
         end
@@ -59,6 +59,29 @@ class HashtagsController < ApplicationController
     end
 
     private
+
+    def sendToGCP(photo_url, printer_id)
+        access_token = session[:google_oauth_token]
+        uri = URI("https://www.google.com/cloudprint/submit")
+        fields = {
+            client_id: ENV['GOOGLE_CLIENT_ID'],
+            access_token: access_token,
+            printerid: printer_id,
+            title: 'Hashtag Printer',
+            ticket: {},
+            content: photo_url,
+            content_type: 'url'
+        }
+
+        uri.query = URI.encode_www_form(params)
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        req = Net::HTTP::Post.new(uri.request_uri)
+        req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
+        res = http.request(req)
+    end
+
     def hashtag_params(params)
         return params.permit(:name)
     end
