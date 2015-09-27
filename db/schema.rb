@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 20150927045401) do
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
     t.string   "name"
+    t.string   "printer_id"
     t.string   "provider"
     t.string   "uid"
   end
