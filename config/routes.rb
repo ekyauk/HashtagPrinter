@@ -2,7 +2,6 @@ Rails.application.routes.draw do
   devise_for :users, :controllers => {
     :omniauth_callbacks => 'users/omniauth_callbacks'
    }
-  resources :users
 
   get 'printers/', to: 'printers#index'
   get 'printers/info/:id', to: 'printers#info'
@@ -13,6 +12,7 @@ Rails.application.routes.draw do
   post 'hashtags/callback/:id', to: 'hashtags#print_photo'
   get 'hashtags/delete/:id', to: 'hashtags#delete'
   get 'hashtags/delete', to: 'hashtags#delete'
+  get 'users/new', to: 'users#new', as: :new_user
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

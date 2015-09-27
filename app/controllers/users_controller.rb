@@ -6,7 +6,6 @@ class UsersController < ApplicationController
     end
 
     def index
-        puts 'called users/index'
     end
 
     def add_printer
