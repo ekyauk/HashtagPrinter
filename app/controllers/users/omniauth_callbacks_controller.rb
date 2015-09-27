@@ -10,6 +10,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         session[:google_oauth_token] = request.env["omniauth.auth"].credentials.token
         session[:session_length] = request.env["omniauth.auth"].credentials.expires_at
         puts 'aytunayfwntyfwutn'
+        session[:session_expiration] = request.env["omniauth.auth"].credentials.expires_at
         sign_in_and_redirect @user, :event => :authentication
       else
         session["devise.google_data"] = request.env["omniauth.auth"]
