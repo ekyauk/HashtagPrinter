@@ -58,16 +58,17 @@ class HashtagsController < ApplicationController
                 access_token: user.google_oauth_token,
                 printerid: user.printer_id,
                 title: 'Hashtag Printer',
-                ticket: {},
+                ticket: {'version' => '1.0', 'print' => {}},
                 content: photo_url,
-                content_type: 'url'
+                contentType: 'url'
             }
-
-            uri.query = URI.encode_www_form(params)
+            puts fields
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
             req = Net::HTTP::Post.new(uri.request_uri)
+            req.set_form_data(fields)
+            req.add_field('Authorization', "OAuth #{user.google_oauth_token}")
             req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
             res = http.request(req)
         end
