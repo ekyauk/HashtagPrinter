@@ -1,6 +1,7 @@
 class HashtagsController < ApplicationController
 
     skip_before_filter :check_login, only: [:callback, :print_photo]
+    protect_from_forgery except: :print_photo
 
     SUBSCRIPTION_CALLBACK = 'http://hashtag-printer.herokuapp.com/hashtags/callback'
 
