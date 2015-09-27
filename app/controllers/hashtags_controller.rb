@@ -43,6 +43,18 @@ class HashtagsController < ApplicationController
         end
     end
 
+    def delete
+        if params[:id].nil?
+            Instagram.delete_subscription(object: 'tag')
+            Hashtag.destroy_all
+        else
+            Instagram.delete_subscription(object: 'tag', object_id: params[:id])
+            Hashtag.destroy_all(name: params[:id])
+
+        end
+        redirect_to :back
+    end
+
     private
     def hashtag_params(params)
         return params.permit(:name)

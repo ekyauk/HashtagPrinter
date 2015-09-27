@@ -3,13 +3,16 @@ Rails.application.routes.draw do
     :omniauth_callbacks => 'users/omniauth_callbacks'
    }
   resources :users
-  resources :printers
 
+  get 'printers/', to: 'printers#index'
   get 'users/add_printer/:id', to: 'users#add_printer'
   get 'users/index', to: 'users#index'
   post 'hashtags/create', to: 'hashtags#create'
   get 'hashtags/callback', to: 'hashtags#callback'
   post 'hashtags/callback', to: 'hashtags#print_photo'
+  get 'hashtags/delete/:id', to: 'hashtags#delete'
+  get 'hashtags/delete', to: 'hashtags#delete'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
