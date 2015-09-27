@@ -12,9 +12,15 @@ class HashtagsController < ApplicationController
             hashtag.users << current_user
             if hashtag.save
                 options = { object_id: params[:hashtag][:name] }
-                puts Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK,'media', options)
-                puts 'output above'
-                flash[:message] = "Successfully subscribed to '#{params[:hashtag][:name]}'"
+                begin
+                    Instagram.create_subscription('tag', SUBSCRIPTION_CALLBACK,'media', options)
+                    puts 'output above'
+                    flash[:message] = "Successfully subscribed to '#{params[:hashtag][:name]}'"
+                rescue Exception => e
+                    hashtag.destroy
+                    puts "Instagram fail: #{e}"
+                    @error = "Something went wrong. Cannot subscribe to #{params[:hashtag][:name]}"
+                end
             end
         end
         redirect_to :back
