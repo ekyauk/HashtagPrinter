@@ -36,7 +36,9 @@ class HashtagsController < ApplicationController
     def print_photo
         Instagram.process_subscription(request.body.read) do |handler|
             handler.on_tag_changed do |tag|
-                photos = Instagram.tag_recent_media(tag).data
+                photos = Instagram.tag_recent_media(tag)
+                puts 'RETURN VALUE'
+                puts photos
                 for photo in photos
                     puts 'should print photo'
                 end

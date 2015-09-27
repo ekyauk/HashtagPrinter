@@ -15,5 +15,5 @@ Welcome <%= current_user.name %>!
 <% end %>
 <h2>Hashtag Subscriptions</h2>
 <% for subscription in Instagram.subscriptions %>
-    <%= subscription['object_id'] %> <%= link_to 'Delete', controller: :hashtags, action: :delete, id: subscription['object_id'] %><br/>
+    <%= "##{subscription['object_id']}" %> <%= link_to 'Delete', controller: :hashtags, action: :delete, id: subscription['object_id'] %><br/>
 <% end %>
