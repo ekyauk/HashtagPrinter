@@ -49,26 +49,28 @@ class HashtagsController < ApplicationController
 
     private
 
-    def sendToGCP(photo_url, printer_id)
-        access_token = session[:google_oauth_token]
-        uri = URI("https://www.google.com/cloudprint/submit")
-        fields = {
-            client_id: ENV['GOOGLE_CLIENT_ID'],
-            access_token: access_token,
-            printerid: printer_id,
-            title: 'Hashtag Printer',
-            ticket: {},
-            content: photo_url,
-            content_type: 'url'
-        }
+    def sendToGCP(photo_url, user_id)
+        user = User.find(user_id)
+        if (user.printer_id != nil && user.google_oauth_token != nil)
+            uri = URI("https://www.google.com/cloudprint/submit")
+            fields = {
+                client_id: ENV['GOOGLE_CLIENT_ID'],
+                access_token: user.google_oauth_token,
+                printerid: user.printer_id,
+                title: 'Hashtag Printer',
+                ticket: {},
+                content: photo_url,
+                content_type: 'url'
+            }
 
-        uri.query = URI.encode_www_form(params)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        req = Net::HTTP::Post.new(uri.request_uri)
-        req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
-        res = http.request(req)
+            uri.query = URI.encode_www_form(params)
+            http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+            req = Net::HTTP::Post.new(uri.request_uri)
+            req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
+            res = http.request(req)
+        end
     end
 
     def hashtag_params(params)
