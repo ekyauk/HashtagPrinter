@@ -18,4 +18,24 @@ class User < ActiveRecord::Base
       user
   end
 
+  def renew_google_access_token
+        uri = URI("https://www.googleapis.com/oauth2/v3/token")
+        fields = {
+            client_id: ENV['GOOGLE_CLIENT_ID'],
+            client_secret: ENV['GOOGLE_CLIENT_SECRET'],
+            refresh_token: self.google_refresh_token,
+            grant_type: self.google_refresh_token
+        }
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        req = Net::HTTP::Post.new(uri.request_uri)
+        req.set_form_data(fields)
+        res = http.request(req)
+        puts res
+        res_hash = JSON.parse(res.body)
+        self.access_token = res_hash['access_token']
+        self.save
+  end
+
 end

@@ -71,6 +71,11 @@ class HashtagsController < ApplicationController
             req.add_field('Authorization', "OAuth #{user.google_oauth_token}")
             req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
             res = http.request(req)
+            if res.code == '403'
+                user.renew_google_access_token
+                res = sendToGCP(photo_url, user_id)
+            end
+            return res
         end
     end
 
