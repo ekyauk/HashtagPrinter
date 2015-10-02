@@ -8,9 +8,20 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user.persisted?
         flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "Google"
         session[:google_oauth_token] = request.env["omniauth.auth"].credentials.token
+
+        #Saves oauth token to user
         @user.google_oauth_token = session[:google_oauth_token]
-        session[:session_expiration] = request.env["omniauth.auth"].credentials.expires_at
+
+        #Saves the refresh token to user if this is the first login
+        refresh_token = request.env["omniauth.auth"].credentials.refresh_token
+        if refresh_token != nil
+          @user.google_refresh_token = refresh_token
+        end
         @user.save
+
+        #Sets the session expiration date
+        session[:session_expiration] = request.env["omniauth.auth"].credentials.expires_at
+
         sign_in_and_redirect @user, :event => :authentication
       else
         session["devise.google_data"] = request.env["omniauth.auth"]
