@@ -55,6 +55,7 @@ class HashtagsController < ApplicationController
             uri = URI("https://www.google.com/cloudprint/submit")
             fields = {
                 client_id: ENV['GOOGLE_CLIENT_ID'],
+                access_token: user.google_refresh_token,
                 printerid: user.printer_id,
                 title: 'Hashtag Printer',
                 ticket: {'version' => '1.0', 'print' => {}},
