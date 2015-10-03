@@ -23,7 +23,6 @@ class HashtagsController < ApplicationController
     end
 
     def print_photo
-        puts 'SUBSCRIPTION_CALLBACK'
         Instagram.process_subscription(request.body.read) do |handler|
             handler.on_tag_changed do |tag|
                 hashtag = Hashtag.where(name: tag).first
@@ -71,8 +70,6 @@ class HashtagsController < ApplicationController
             if user.printer_id != nil
                 photo_req = printPhotoRequest(user, photo_url)
                 res = http.request(photo_req)
-                puts 'first response'
-                puts res
 
                 #if the google access token needs to be renewed
                 if res.code == '403'
@@ -109,8 +106,6 @@ class HashtagsController < ApplicationController
             content: photo_url,
             contentType: 'url'
         }
-        puts fields
-
         req = Net::HTTP::Post.new(uri.request_uri)
         req.set_form_data(fields)
         req.add_field('Authorization', "OAuth #{user.google_oauth_token}")
