@@ -27,6 +27,8 @@ class HashtagsController < ApplicationController
         Instagram.process_subscription(request.body.read) do |handler|
             handler.on_tag_changed do |tag|
                 photos = Instagram.tag_recent_media(tag)
+                print "hashtag: #{tag}"
+                print photos.to_json
                 for photo_hash in photos
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
