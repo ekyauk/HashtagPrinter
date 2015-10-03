@@ -26,14 +26,20 @@ class HashtagsController < ApplicationController
         puts 'SUBSCRIPTION_CALLBACK'
         Instagram.process_subscription(request.body.read) do |handler|
             handler.on_tag_changed do |tag|
-                photos = Instagram.tag_recent_media(tag)
-                print "hashtag: #{tag}"
-                print photos.to_json
+                hashtag = Hashtag.where(name: tag).first
+                photos = Instagram.tag_recent_media(tag, min_id: hashtag.last_printed)
+                id = 0
                 for photo_hash in photos
+                    caption = photo_hash['caption']['text']
+                    if photo_hash[id].to_i > id
+                        id = photo_hash[id].to_i
+                    end
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
-                    sendToGCP(photo_url, params[:id])
+                    sendToGCP(caption, photo_url, params[:id])
                 end
+                hashtag.last_printed = id
+                hashtag.save
             end
         end
     end
@@ -53,7 +59,7 @@ class HashtagsController < ApplicationController
 
     private
 
-    def sendToGCP(photo_url, user_id)
+    def sendToGCP(photo_title, photo_url, user_id)
         user = User.find(user_id)
         uri = URI(CLOUD_PRINT_URL)
         if (user.google_oauth_token != nil)
@@ -79,26 +85,26 @@ class HashtagsController < ApplicationController
 
             #if it should save to gdrive
             if user.save_to_gdrive
-                gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
+                gdrive_save_req = saveToDriveRequest(photo_title, user.google_oauth_token, photo_url)
                 gdrive_res = http.request(gdrive_save_req)
 
                 #if the google access token needs to be renewed
                 if gdrive_res.code == '403'
                     puts 'renewing google access token'
                     user.renew_google_access_token
-                    gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
+                    gdrive_save_req = saveToDriveRequest(photo_title, user.google_oauth_token, photo_url)
                     gdrive_res = http.request(gdrive_save_req)
                 end
             end
         end
     end
 
-    def printPhotoRequest(user, photo_url)
+    def printPhotoRequest(photo_title, user, photo_url)
         uri = URI(CLOUD_PRINT_URL)
         fields = {
             client_id: ENV['GOOGLE_CLIENT_ID'],
             printerid: user.printer_id,
-            title: 'Hashtag Printer',
+            title: photo_title,
             ticket: {'version' => '1.0', 'print' => {}},
             content: photo_url,
             contentType: 'url'
@@ -113,12 +119,12 @@ class HashtagsController < ApplicationController
 
     end
 
-    def saveToDriveRequest(access_token, photo_url)
+    def saveToDriveRequest(photo_title, access_token, photo_url)
         uri = URI(CLOUD_PRINT_URL)
         fields = {
                 client_id: ENV['GOOGLE_CLIENT_ID'],
                 printerid: '__google__docs',
-                title: 'Hashtag Printer Picture',
+                title: photo_title,
                 ticket: {'version' => '1.0', 'print' => {}},
                 content: photo_url,
                 contentType: 'url'
