@@ -18,6 +18,7 @@
     <% end %>
 </table>
 <% end %>
+<%= link_to 'Select No Printer', controller: :users, action: :add_printer %>
 <% if current_user.save_to_gdrive %>
     <%= link_to "Don't save to Google Drive", controller: :users, action: :change_save_to_gdrive %>
 <% else %>
