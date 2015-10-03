@@ -37,6 +37,8 @@ class HashtagsController < ApplicationController
                     puts "about to print #{photo_url}"
                     sendToGCP(caption, photo_url, params[:id])
                 end
+                puts "Old last printed ID #{hashtag.last_printed}"
+                puts "Last printed ID: #{id}"
                 hashtag.last_printed = id
                 hashtag.save
             end
