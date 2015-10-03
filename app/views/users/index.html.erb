@@ -1,5 +1,4 @@
 Welcome <%= current_user.name %>!
-<%= link_to "View Printers", controller: :printers, action: :index %> <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
 <br/>
 <% if !flash[:message].nil? %>
     <%= flash[:message] %>

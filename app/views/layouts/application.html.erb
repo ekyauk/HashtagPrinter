@@ -7,7 +7,15 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-
+<% if current_user != nil %>
+    <table>
+        <tr>
+            <td><%= link_to 'Home', controller: :users, action: :index %></td>
+            <td><%= link_to "Settings", controller: :printers, action: :index %></td>
+            <td><%= link_to 'Logout', destroy_user_session_path, method: :delete %></td>
+        </tr>
+    </table>
+<% end %>
 <%= yield %>
 
 </body>
