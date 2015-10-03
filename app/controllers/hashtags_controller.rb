@@ -60,13 +60,18 @@ class HashtagsController < ApplicationController
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
             photo_req = printPhotoRequest(user, photo_url)
             res = http.request(photo_req)
+            puts 'first response'
+            puts res
             if res.code == '403'
+                puts 'renewing google access token'
                 user.renew_google_access_token
                 res = sendToGCP(photo_url, user_id)
             end
             gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
             http.request(gdrive_save_req)
             return res
+        else
+            puts "Error! User printer id: #{user.printer_id}, oauth: #{user.google_oauth_token}"
         end
     end
 
