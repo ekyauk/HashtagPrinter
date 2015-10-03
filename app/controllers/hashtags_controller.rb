@@ -35,7 +35,11 @@ class HashtagsController < ApplicationController
                     end
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
-                    sendToGCP(caption, photo_url, params[:id])
+                    begin
+                        sendToGCP(caption, photo_url, params[:id])
+                    rescue
+                        puts "Failed to print #{caption}"
+                    end
                 end
                 puts "Old last printed ID #{hashtag.last_printed}"
                 puts "Last printed ID: #{id}"
