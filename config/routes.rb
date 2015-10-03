@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   get 'printers/', to: 'printers#index'
   get 'printers/info/:id', to: 'printers#info'
   get 'users/add_printer/:id', to: 'users#add_printer'
+  get 'users/save_to_gdrive', to: 'users#change_save_to_gdrive'
+
   get 'users/index', to: 'users#index'
   post 'hashtags/create', to: 'hashtags#create'
   get 'hashtags/callback/:id', to: 'hashtags#callback'

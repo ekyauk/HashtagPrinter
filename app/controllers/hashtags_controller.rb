@@ -3,6 +3,7 @@ class HashtagsController < ApplicationController
     skip_before_filter :check_login, only: [:callback, :print_photo]
     protect_from_forgery except: :print_photo
 
+    CLOUD_PRINT_URL = 'https://www.google.com/cloudprint/submit'
 
     def create
         hashtag = Hashtag.find_by_name(params[:hashtag][:name]) ? Hashtag.find_by_name(params[:hashtag][:name])  : Hashtag.new(hashtag_params(params[:hashtag]))
@@ -37,6 +38,7 @@ class HashtagsController < ApplicationController
 
     def delete
         if params[:id].nil?
+            puts 'Deleting all tags'
             Instagram.delete_subscription(object: 'tag')
             Hashtag.destroy_all
         else
@@ -51,32 +53,59 @@ class HashtagsController < ApplicationController
 
     def sendToGCP(photo_url, user_id)
         user = User.find(user_id)
+        uri = URI(CLOUD_PRINT_URL)
         if (user.printer_id != nil && user.google_oauth_token != nil)
-            uri = URI("https://www.google.com/cloudprint/submit")
-            fields = {
-                client_id: ENV['GOOGLE_CLIENT_ID'],
-                access_token: user.google_refresh_token,
-                printerid: user.printer_id,
-                title: 'Hashtag Printer',
-                ticket: {'version' => '1.0', 'print' => {}},
-                content: photo_url,
-                contentType: 'url'
-            }
-            puts fields
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-            req = Net::HTTP::Post.new(uri.request_uri)
-            req.set_form_data(fields)
-            req.add_field('Authorization', "OAuth #{user.google_oauth_token}")
-            req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
-            res = http.request(req)
+            photo_req = printPhotoRequest(user, photo_url)
+            res = http.request(photo_req)
             if res.code == '403'
                 user.renew_google_access_token
                 res = sendToGCP(photo_url, user_id)
             end
+            gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
+            http.request(gdrive_save_req)
             return res
         end
+    end
+
+    def printPhotoRequest(user, photo_url)
+        uri = URI(CLOUD_PRINT_URL)
+        fields = {
+            client_id: ENV['GOOGLE_CLIENT_ID'],
+            printerid: user.printer_id,
+            title: 'Hashtag Printer',
+            ticket: {'version' => '1.0', 'print' => {}},
+            content: photo_url,
+            contentType: 'url'
+        }
+        puts fields
+
+        req = Net::HTTP::Post.new(uri.request_uri)
+        req.set_form_data(fields)
+        req.add_field('Authorization', "OAuth #{user.google_oauth_token}")
+        req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
+        return req
+
+    end
+
+    def saveToDriveRequest(access_token, photo_url)
+        uri = URI(CLOUD_PRINT_URL)
+        fields = {
+                client_id: ENV['GOOGLE_CLIENT_ID'],
+                printerid: '__google__docs',
+                title: 'Hashtag Printer Picture',
+                ticket: {'version' => '1.0', 'print' => {}},
+                content: photo_url,
+                contentType: 'url'
+        }
+        req = Net::HTTP::Post.new(uri.request_uri)
+        req.set_form_data(fields)
+        req.add_field('Authorization', "OAuth #{access_token}")
+        req.add_field('X-CloudPrint-Proxy', '0.0.0.0')
+        return req
+
     end
 
     def hashtag_params(params)

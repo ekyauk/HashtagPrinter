@@ -1,17 +1,25 @@
 <% if @printer_info == nil %>
-    <h1>Error no printers :(</h1>
+    <h1>No printers :(</h1>
 <% else %>
+<h1>Printers</h1>
 <table>
     <% for printer in @printer_info['printers'] %>
-    <tr>
-        <td><%= link_to printer['displayName'].gsub('_', ' '), action: :info, id: printer['id'] %></td>
-        <td><%= printer['connectionStatus'] %></td>
-        <% if printer['id'] == current_user.printer_id %>
-            <td>Selected</td>
-        <% else %>
-            <td><%= link_to 'Select', controller: :users, action: :add_printer, id: printer['id'] %></td>
+        <% if printer['id'] != '__google__docs' %>
+            <tr>
+                <td><%= link_to printer['displayName'].gsub('_', ' '), action: :info, id: printer['id'] %></td>
+                <td><%= printer['connectionStatus'] %></td>
+                <% if printer['id'] == current_user.printer_id %>
+                    <td>Selected</td>
+                <% else %>
+                    <td><%= link_to 'Select', controller: :users, action: :add_printer, id: printer['id'] %></td>
+                <% end %>
+            </tr>
         <% end %>
-    </tr>
     <% end %>
 </table>
+<% end %>
+<% if current_user.save_to_gdrive %>
+    <%= link_to "Don't save to Google Drive", controller: :users, action: :change_save_to_gdrive %>
+<% else %>
+    <%= link_to "Save to Google Drive", controller: :users, action: :change_save_to_gdrive%>
 <% end %>

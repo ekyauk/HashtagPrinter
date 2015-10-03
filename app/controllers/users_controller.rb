@@ -14,4 +14,9 @@ class UsersController < ApplicationController
         redirect_to '/printers'
     end
 
+    def change_save_to_gdrive
+        current_user.save_to_gdrive = !current_user.save_to_gdrive
+        current_user.save
+        redirect_to '/printers'
+    end
 end
