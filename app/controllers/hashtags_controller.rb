@@ -30,7 +30,7 @@ class HashtagsController < ApplicationController
                 for photo_hash in photos
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
-                    puts sendToGCP(photo_url, params[:id]).body
+                    sendToGCP(photo_url, params[:id])
                 end
             end
         end
@@ -54,24 +54,40 @@ class HashtagsController < ApplicationController
     def sendToGCP(photo_url, user_id)
         user = User.find(user_id)
         uri = URI(CLOUD_PRINT_URL)
-        if (user.printer_id != nil && user.google_oauth_token != nil)
+        if (user.google_oauth_token != nil)
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-            photo_req = printPhotoRequest(user, photo_url)
-            res = http.request(photo_req)
-            puts 'first response'
-            puts res
-            if res.code == '403'
-                puts 'renewing google access token'
-                user.renew_google_access_token
-                res = sendToGCP(photo_url, user_id)
+
+            #if a printer is selected
+            if user.printer_id != nil
+                photo_req = printPhotoRequest(user, photo_url)
+                res = http.request(photo_req)
+                puts 'first response'
+                puts res
+
+                #if the google access token needs to be renewed
+                if res.code == '403'
+                    puts 'renewing google access token'
+                    user.renew_google_access_token
+                    photo_req = printPhotoRequest(user, photo_url)
+                    res = http.request(photo_req)
+                end
             end
-            gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
-            http.request(gdrive_save_req)
-            return res
-        else
-            puts "Error! User printer id: #{user.printer_id}, oauth: #{user.google_oauth_token}"
+
+            #if it should save to gdrive
+            if user.save_to_gdrive
+                gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
+                gdrive_res = http.request(gdrive_save_req)
+
+                #if the google access token needs to be renewed
+                if gdrive_res.code == '403'
+                    puts 'renewing google access token'
+                    user.renew_google_access_token
+                    gdrive_save_req = saveToDriveRequest(user.google_oauth_token, photo_url)
+                    gdrive_res = http.request(gdrive_save_req)
+                end
+            end
         end
     end
 
