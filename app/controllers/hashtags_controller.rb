@@ -27,13 +27,13 @@ class HashtagsController < ApplicationController
             handler.on_tag_changed do |tag|
                 hashtag = Hashtag.where(name: tag).first
                 puts "LAST PRINTED ID: #{hashtag.last_printed}"
-                photos = Instagram.tag_recent_media(tag, min_id: hashtag.last_printed)
+                photos = Instagram.tag_recent_media(tag, min_id: hashtag.last_printed.to_i)
                 user = User.find(params[:id])
                 for photo_hash in photos
                     caption = photo_hash['caption']['text']
-                    id = photo_hash['id'].to_i
+                    id = photo_hash['id']
                     puts "photo id #{id}"
-                    if  id > hashtag.last_printed
+                    if  id.to_i > hashtag.last_printed.to_i
                         puts "Changes last printed from #{hashtag.last_printed} to #{id}"
                         hashtag.last_printed = id
                         hashtag.save
