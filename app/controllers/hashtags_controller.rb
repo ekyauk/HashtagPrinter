@@ -27,6 +27,7 @@ class HashtagsController < ApplicationController
             handler.on_tag_changed do |tag|
                 hashtag = Hashtag.where(name: tag).first
                 photos = Instagram.tag_recent_media(tag, min_id: hashtag.last_printed)
+                user = User.find(params[:id])
                 for photo_hash in photos
                     caption = photo_hash['caption']['text']
                     id = photo_hash[id].to_i
@@ -39,7 +40,7 @@ class HashtagsController < ApplicationController
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
                     begin
-                        sendToGCP(caption, photo_url, params[:id])
+                        sendToGCP(caption, photo_url, user)
                     rescue
                         puts "Failed to print #{caption}"
                     end
@@ -64,8 +65,7 @@ class HashtagsController < ApplicationController
 
     private
 
-    def sendToGCP(photo_title, photo_url, user_id)
-        user = User.find(user_id)
+    def sendToGCP(photo_title, photo_url, user)
         uri = URI(CLOUD_PRINT_URL)
         if (user.google_oauth_token != nil)
             http = Net::HTTP.new(uri.host, uri.port)
