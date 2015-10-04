@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
     req = Net::HTTP::Post.new(uri.request_uri)
     req.set_form_data(fields)
     res = http.request(req)
-    puts res
+    puts "Renew access token response #{res.body}"
     res_hash = JSON.parse(res.body)
     self.google_oauth_token = res_hash['access_token']
     self.save
