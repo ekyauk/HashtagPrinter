@@ -31,7 +31,7 @@ class HashtagsController < ApplicationController
                 user = User.find(params[:id])
                 for photo_hash in photos
                     caption = photo_hash['caption']['text']
-                    id = photo_hash[id].to_i
+                    id = photo_hash['id'].to_i
                     puts "photo id #{id}"
                     if  id > hashtag.last_printed
                         puts "Changes last printed from #{hashtag.last_printed} to #{id}"
