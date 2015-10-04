@@ -74,7 +74,7 @@ class HashtagsController < ApplicationController
 
     def sendToGCP(photo_title, photo_url, user)
         uri = URI(CLOUD_PRINT_URL)
-        if (user.google_oauth_token != nil)
+        if (user.google_oauth_token != nil || user.google_refresh_token != nil)
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
