@@ -29,10 +29,14 @@ class HashtagsController < ApplicationController
                 puts "LAST PRINTED ID: #{hashtag.last_printed}"
                 photos = Instagram.tag_recent_media(tag, min_id: hashtag.last_printed.to_i)
                 user = User.find(params[:id])
+                oldId = hashtag.last_printed.to_i
                 for photo_hash in photos
                     caption = photo_hash['caption']['text']
                     endPos = photo_hash['id'].index('_')
                     id = photo_hash['id'][0, endPos-1]
+                    if oldId >= id.to_i
+                        next
+                    end
                     puts "photo id #{id}"
                     if  id.to_i > hashtag.last_printed.to_i
                         puts "Changes last printed from #{hashtag.last_printed} to #{id}"
