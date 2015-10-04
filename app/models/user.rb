@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
         client_id: ENV['GOOGLE_CLIENT_ID'],
         client_secret: ENV['GOOGLE_CLIENT_SECRET'],
         refresh_token: self.google_refresh_token,
-        grant_type: self.google_refresh_token
+        grant_type: 'refresh_token'
     }
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
