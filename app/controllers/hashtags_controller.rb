@@ -31,7 +31,8 @@ class HashtagsController < ApplicationController
                 user = User.find(params[:id])
                 for photo_hash in photos
                     caption = photo_hash['caption']['text']
-                    id = photo_hash['id']
+                    endPos = photo_hash['id'].index('_')
+                    id = photo_hash['id'][0, endPos-1]
                     puts "photo id #{id}"
                     if  id.to_i > hashtag.last_printed.to_i
                         puts "Changes last printed from #{hashtag.last_printed} to #{id}"
@@ -49,6 +50,7 @@ class HashtagsController < ApplicationController
 
             end
         end
+        render nothing: true
     end
 
     def delete
