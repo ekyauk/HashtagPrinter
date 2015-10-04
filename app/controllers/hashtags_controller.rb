@@ -27,11 +27,14 @@ class HashtagsController < ApplicationController
             handler.on_tag_changed do |tag|
                 hashtag = Hashtag.where(name: tag).first
                 photos = Instagram.tag_recent_media(tag, min_id: hashtag.last_printed)
-                id = 0
                 for photo_hash in photos
                     caption = photo_hash['caption']['text']
-                    if photo_hash[id].to_i > id
-                        id = photo_hash[id].to_i
+                    id = photo_hash[id].to_i
+                    if  id > hashtag.last_printed
+                        puts "Old last printed ID #{hashtag.last_printed}"
+                        puts "Last printed ID: #{id}"
+                        hashtag.last_printed = id
+                        hashtag.save
                     end
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     puts "about to print #{photo_url}"
@@ -41,10 +44,7 @@ class HashtagsController < ApplicationController
                         puts "Failed to print #{caption}"
                     end
                 end
-                puts "Old last printed ID #{hashtag.last_printed}"
-                puts "Last printed ID: #{id}"
-                hashtag.last_printed = id
-                hashtag.save
+
             end
         end
     end
