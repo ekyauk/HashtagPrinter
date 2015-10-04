@@ -44,7 +44,6 @@ class HashtagsController < ApplicationController
                         hashtag.save
                     end
                     photo_url = photo_hash['images']['standard_resolution']['url']
-                    puts "about to print #{photo_url}"
                     begin
                         sendToGCP(caption, photo_url, user)
                     rescue
@@ -111,6 +110,7 @@ class HashtagsController < ApplicationController
 
     def printPhotoRequest(photo_title, user, photo_url)
         uri = URI(CLOUD_PRINT_URL)
+        puts "About to print #{photo_url} with #{user.printer_id}"
         fields = {
             client_id: ENV['GOOGLE_CLIENT_ID'],
             printerid: user.printer_id,
@@ -129,6 +129,7 @@ class HashtagsController < ApplicationController
 
     def saveToDriveRequest(photo_title, access_token, photo_url)
         uri = URI(CLOUD_PRINT_URL)
+        puts "Saving #{photo_url} to Google Drive"
         fields = {
                 client_id: ENV['GOOGLE_CLIENT_ID'],
                 printerid: '__google__docs',
