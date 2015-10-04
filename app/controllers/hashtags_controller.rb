@@ -38,16 +38,17 @@ class HashtagsController < ApplicationController
                         next
                     end
                     puts "photo id #{id}"
-                    if  id.to_i > hashtag.last_printed.to_i
-                        puts "Changes last printed from #{hashtag.last_printed} to #{id}"
-                        hashtag.last_printed = id
-                        hashtag.save
-                    end
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     begin
                         sendToGCP(caption, photo_url, user)
-                    rescue
+                        if  id.to_i > hashtag.last_printed.to_i
+                            puts "Changes last printed from #{hashtag.last_printed} to #{id}"
+                            hashtag.last_printed = id
+                            hashtag.save
+                        end
+                    rescue Exception => e
                         puts "Failed to print #{caption}"
+                        puts "Error: #{e.inspect}"
                     end
                 end
 
