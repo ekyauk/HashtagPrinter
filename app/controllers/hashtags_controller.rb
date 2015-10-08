@@ -83,13 +83,14 @@ class HashtagsController < ApplicationController
             if user.printer_id != nil
                 photo_req = printPhotoRequest(photo_title, user, photo_url)
                 res = http.request(photo_req)
-
+                puts res.body
                 #if the google access token needs to be renewed
                 if res.code == '403'
                     puts 'renewing google access token'
                     user.renew_google_access_token
                     photo_req = printPhotoRequest(photo_title, user, photo_url)
                     res = http.request(photo_req)
+                    puts res.body
                 end
             end
 
