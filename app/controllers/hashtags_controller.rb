@@ -92,6 +92,8 @@ class HashtagsController < ApplicationController
                     res = http.request(photo_req)
                     puts res.body
                 end
+                puts 'PRINT REQUEST'
+                puts photo_req.body
             end
 
             #if it should save to gdrive
