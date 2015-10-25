@@ -40,11 +40,11 @@ class HashtagsController < ApplicationController
                     puts "photo id #{id}"
                     photo_url = photo_hash['images']['standard_resolution']['url']
                     begin
-                        sendToGCP(caption, photo_url, user)
                         if  id.to_i > hashtag.last_printed.to_i
                             puts "Changes last printed from #{hashtag.last_printed} to #{id}"
                             hashtag.last_printed = id
                             hashtag.save
+                            sendToGCP(caption, photo_url, user)
                         end
                     rescue Exception => e
                         puts "Failed to print #{caption}"
@@ -120,7 +120,7 @@ class HashtagsController < ApplicationController
             printerid: user.printer_id,
             title: photo_title,
             ticket: {'version' => '1.0', 'print' => {}},
-            content: photo_url,
+            content: URI(photo_url),
             contentType: 'url'
         }
         req = Net::HTTP::Post.new(uri.request_uri)
