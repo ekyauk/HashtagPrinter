@@ -38,7 +38,7 @@ class HashtagsController < ApplicationController
                         next
                     end
                     puts "photo id #{id}"
-                    photo_url = photo_hash['images']['standard_resolution']['url']
+                    photo_url = photo_hash['images']['low_resolution']['url']
                     begin
                         if  id.to_i > hashtag.last_printed.to_i
                             puts "Changes last printed from #{hashtag.last_printed} to #{id}"
